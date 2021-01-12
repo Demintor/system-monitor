@@ -1,9 +1,10 @@
 package main
 
 import (
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/swaggo/files"
-	"github.com/swaggo/gin-swagger"
+	swaggerFiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"example.com/basic/api"
 
@@ -26,6 +27,11 @@ import (
 // @BasePath /v2
 func main() {
 	r := gin.New()
+
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:8081"}
+
+	r.Use(cors.New(config))
 
 	r.GET("/v2/testapi/get-string-by-int/:some_id", api.GetStringByInt)
 	r.GET("/v2/testapi/get-struct-array-by-string/:some_id", api.GetStructArrayByString)
