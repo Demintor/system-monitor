@@ -1,5 +1,38 @@
 basePath: /v2
 definitions:
+  model.ExecuteResult:
+    properties:
+      output:
+        type: string
+    type: object
+  model.Process:
+    properties:
+      c:
+        type: string
+      cmd:
+        type: string
+      ppid:
+        type: string
+      psr:
+        type: string
+      rss:
+        type: string
+      stime:
+        type: string
+      sz:
+        type: string
+      time:
+        type: string
+      tty:
+        type: string
+      uid:
+        type: string
+    type: object
+  model.Script:
+    properties:
+      script:
+        type: string
+    type: object
   web.APIError:
     properties:
       errorCode:
@@ -21,6 +54,33 @@ info:
   title: Swagger Example API
   version: "1.0"
 paths:
+  /testapi/execute-script/:
+    post:
+      consumes:
+      - application/json
+      description: execute bash script
+      parameters:
+      - description: script json
+        in: body
+        name: journal
+        required: true
+        schema:
+          $ref: '#/definitions/model.Script'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.ExecuteResult'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/web.APIError'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/web.APIError'
   /testapi/get-process-table:
     get:
       description: get process table
@@ -31,21 +91,21 @@ paths:
           description: OK
           schema:
             items:
-              type: object
+              $ref: '#/definitions/model.Process'
             type: array
         "500":
           description: Internal Server Error
           schema:
             $ref: '#/definitions/web.APIError'
-  /testapi/get-string-by-int/{some_id}:
-    get:
+  /testapi/kill-process/{pid}:
+    post:
       consumes:
       - application/json
-      description: get string by ID
+      description: kill process by PID
       parameters:
-      - description: Some ID
+      - description: PID
         in: path
-        name: some_id
+        name: pid
         required: true
         type: integer
       produces:
@@ -56,48 +116,11 @@ paths:
           schema:
             type: string
         "400":
-          description: We need ID!!
+          description: Incorrect PID
           schema:
             $ref: '#/definitions/web.APIError'
-        "404":
-          description: Can not find ID
-          schema:
-            $ref: '#/definitions/web.APIError'
-      summary: Add a new pet to the store
-  /testapi/get-struct-array-by-string/{some_id}:
-    get:
-      consumes:
-      - application/json
-      description: get struct array by ID
-      parameters:
-      - description: Some ID
-        in: path
-        name: some_id
-        required: true
-        type: string
-      - description: Offset
-        in: query
-        name: offset
-        required: true
-        type: integer
-      - description: Offset
-        in: query
-        name: limit
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: ok
-          schema:
-            type: string
-        "400":
-          description: We need ID!!
-          schema:
-            $ref: '#/definitions/web.APIError'
-        "404":
-          description: Can not find ID
+        "500":
+          description: Internal Server Error
           schema:
             $ref: '#/definitions/web.APIError'
 swagger: "2.0"

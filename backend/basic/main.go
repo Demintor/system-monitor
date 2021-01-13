@@ -33,9 +33,9 @@ func main() {
 
 	r.Use(cors.New(config))
 
-	r.GET("/v2/testapi/get-string-by-int/:some_id", api.GetStringByInt)
-	r.GET("/v2/testapi/get-struct-array-by-string/:some_id", api.GetStructArrayByString)
 	r.GET("/v2/testapi/get-process-table", api.GetProcessTable)
+	r.POST("/v2/testapi/kill-process/:pid", api.KillProcess)
+	r.POST("/v2/testapi/execute-script", api.ExecuteScript)
 
 	url := ginSwagger.URL("http://localhost:8080/swagger/doc.json") // The url pointing to API definition
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler, url))

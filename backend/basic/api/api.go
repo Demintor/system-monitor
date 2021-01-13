@@ -1,58 +1,82 @@
 package api
 
 import (
-	"fmt"
-	"github.com/gin-gonic/gin"
-	"example.com/basic/web"
-	"example.com/basic/sysutils"
 	"net/http"
+	"strconv"
+
+	"example.com/basic/model"
+	"example.com/basic/sysutils"
+	"example.com/basic/web"
+	"github.com/gin-gonic/gin"
 )
-
-//
-// @Summary Add a new pet to the store
-// @Description get string by ID
-// @Accept  json
-// @Produce  json
-// @Param   some_id     path    int     true        "Some ID"
-// @Success 200 {string} string	"ok"
-// @Failure 400 {object} web.APIError "We need ID!!"
-// @Failure 404 {object} web.APIError "Can not find ID"
-// @Router /testapi/get-string-by-int/{some_id} [get]
-func GetStringByInt(c *gin.Context) {
-	err := web.APIError{}
-	fmt.Println(err)
-}
-
-// @Description get struct array by ID
-// @Accept  json
-// @Produce  json
-// @Param   some_id     path    string     true        "Some ID"
-// @Param   offset     query    int     true        "Offset"
-// @Param   limit      query    int     true        "Offset"
-// @Success 200 {string} string	"ok"
-// @Failure 400 {object} web.APIError "We need ID!!"
-// @Failure 404 {object} web.APIError "Can not find ID"
-// @Router /testapi/get-struct-array-by-string/{some_id} [get]
-func GetStructArrayByString(c *gin.Context) {
-
-}
 
 // @Description get process table
 // @Produce  json
-// @Success 200 {array} object
+// @Success 200 {array} model.Process
 // @Failure 500 {object} web.APIError Internal Server Error
 // @Router /testapi/get-process-table [get]
 func GetProcessTable(c *gin.Context) {
 	table, err := sysutils.GetProcessTable()
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, "{\"errorCode\": 0, \"errorMessage\": \"" + err.Error() + "\"}")
+		c.JSON(http.StatusInternalServerError, web.APIError{ErrorCode: 1, ErrorMessage: err.Error()})
 		return
 	}
 
 	c.JSON(http.StatusOK, table)
 }
 
-type Pet3 struct {
-	ID int `json:"id"`
+// @Description kill process by PID
+// @Accept  json
+// @Produce  json
+// @Param   pid     path    int     true        "PID"
+// @Success 200 {string} string	"ok"
+// @Failure 400 {object} web.APIError "Incorrect PID"
+// @Failure 500 {object} web.APIError Internal Server Error
+// @Router /testapi/kill-process/{pid} [post]
+func KillProcess(c *gin.Context) {
+
+	pid, err := strconv.Atoi(c.Param("pid"))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, web.APIError{ErrorCode: 0, ErrorMessage: err.Error()})
+		return
+	}
+
+	err = sysutils.KillProcess(pid)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.APIError{ErrorCode: 1, ErrorMessage: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, "ok")
+}
+
+// @Description execute bash script
+// @Accept  json
+// @Produce  json
+// @Param journal body model.Script true "script json"
+// @Success 200 {object} model.ExecuteResult
+// @Failure 400 {object} web.APIError
+// @Failure 500 {object} web.APIError
+// @Router /testapi/execute-script/ [post]
+func ExecuteScript(c *gin.Context) {
+	var script model.Script
+
+	if err := c.ShouldBindJSON(&script); err != nil {
+		c.JSON(http.StatusBadRequest, web.APIError{ErrorCode: 0, ErrorMessage: err.Error()})
+		return
+	}
+
+	output, err := sysutils.ExecuteScript(script.Script)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.APIError{ErrorCode: 1, ErrorMessage: err.Error()})
+		return
+	}
+
+	result := model.ExecuteResult{Output: output}
+
+	c.JSON(http.StatusOK, result)
 }

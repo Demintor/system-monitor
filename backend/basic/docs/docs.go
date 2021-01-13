@@ -33,6 +33,48 @@ var doc = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/testapi/execute-script/": {
+            "post": {
+                "description": "execute bash script",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "parameters": [
+                    {
+                        "description": "script json",
+                        "name": "journal",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Script"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.ExecuteResult"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/web.APIError"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/web.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/testapi/get-process-table": {
             "get": {
                 "description": "get process table",
@@ -45,7 +87,7 @@ var doc = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "type": "object"
+                                "$ref": "#/definitions/model.Process"
                             }
                         }
                     },
@@ -58,21 +100,20 @@ var doc = `{
                 }
             }
         },
-        "/testapi/get-string-by-int/{some_id}": {
-            "get": {
-                "description": "get string by ID",
+        "/testapi/kill-process/{pid}": {
+            "post": {
+                "description": "kill process by PID",
                 "consumes": [
                     "application/json"
                 ],
                 "produces": [
                     "application/json"
                 ],
-                "summary": "Add a new pet to the store",
                 "parameters": [
                     {
                         "type": "integer",
-                        "description": "Some ID",
-                        "name": "some_id",
+                        "description": "PID",
+                        "name": "pid",
                         "in": "path",
                         "required": true
                     }
@@ -85,67 +126,13 @@ var doc = `{
                         }
                     },
                     "400": {
-                        "description": "We need ID!!",
+                        "description": "Incorrect PID",
                         "schema": {
                             "$ref": "#/definitions/web.APIError"
                         }
                     },
-                    "404": {
-                        "description": "Can not find ID",
-                        "schema": {
-                            "$ref": "#/definitions/web.APIError"
-                        }
-                    }
-                }
-            }
-        },
-        "/testapi/get-struct-array-by-string/{some_id}": {
-            "get": {
-                "description": "get struct array by ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Some ID",
-                        "name": "some_id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Offset",
-                        "name": "offset",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "description": "Offset",
-                        "name": "limit",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "ok",
-                        "schema": {
-                            "type": "string"
-                        }
-                    },
-                    "400": {
-                        "description": "We need ID!!",
-                        "schema": {
-                            "$ref": "#/definitions/web.APIError"
-                        }
-                    },
-                    "404": {
-                        "description": "Can not find ID",
+                    "500": {
+                        "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/web.APIError"
                         }
@@ -155,6 +142,57 @@ var doc = `{
         }
     },
     "definitions": {
+        "model.ExecuteResult": {
+            "type": "object",
+            "properties": {
+                "output": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Process": {
+            "type": "object",
+            "properties": {
+                "c": {
+                    "type": "string"
+                },
+                "cmd": {
+                    "type": "string"
+                },
+                "ppid": {
+                    "type": "string"
+                },
+                "psr": {
+                    "type": "string"
+                },
+                "rss": {
+                    "type": "string"
+                },
+                "stime": {
+                    "type": "string"
+                },
+                "sz": {
+                    "type": "string"
+                },
+                "time": {
+                    "type": "string"
+                },
+                "tty": {
+                    "type": "string"
+                },
+                "uid": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Script": {
+            "type": "object",
+            "properties": {
+                "script": {
+                    "type": "string"
+                }
+            }
+        },
         "web.APIError": {
             "type": "object",
             "properties": {

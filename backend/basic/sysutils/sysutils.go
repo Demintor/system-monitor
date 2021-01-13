@@ -2,52 +2,84 @@ package sysutils
 
 import (
 	"bytes"
+	"io/ioutil"
 	"log"
+	"os"
 	"os/exec"
+	"strconv"
 	"strings"
 	"unicode"
+
+	"example.com/basic/model"
 )
 
-
-func GetProcessTable() ([]map[string]string, error) {
+func GetProcessTable() ([]model.Process, error) {
 	cmd := exec.Command("ps", "-eF")
 
 	var out bytes.Buffer
-    cmd.Stdout = &out
+	cmd.Stdout = &out
 
 	err := cmd.Run()
 
-    if err != nil {
+	if err != nil {
 		println(err)
 		log.Fatal(err)
 		return nil, err
 	}
-	
+
 	lines := strings.Split(out.String(), "\n")
 
-	var process []map[string]string
+	var processes []model.Process
 
-	for _, line := range lines[1:len(lines) - 1] {
-		ps_map := make(map[string]string)
-
-		process = append(process, ps_map)
+	for _, line := range lines[1 : len(lines)-1] {
 		words := strings.FieldsFunc(line, unicode.IsSpace)
 
-		ps_map["UID"] = words[0]
-		ps_map["PID"] = words[1]
-		ps_map["PPID"] = words[2]
-		ps_map["C"] = words[3]
-		ps_map["SZ"] = words[4]
-		ps_map["RSS"] = words[5]
-		ps_map["PSR"] = words[6]
-		process = append(process, ps_map)
-		ps_map["STIME"] = words[7]
-		ps_map["TTY"] = words[8]
-		ps_map["TIME"] = words[9]
-		ps_map["CMD"] = words[10]
+		process := model.Process{
+			UID:   words[0],
+			PPID:  words[1],
+			C:     words[2],
+			SZ:    words[3],
+			RSS:   words[4],
+			PSR:   words[5],
+			STIME: words[6],
+			TTY:   words[7],
+			TIME:  words[8],
+			CMD:   words[9],
+		}
 
-		process = append(process, ps_map)
+		processes = append(processes, process)
 	}
 
-	return process, err
+	return processes, nil
+}
+
+func KillProcess(PID int) error {
+	cmd := exec.Command("kill", "-TERM", strconv.Itoa(PID))
+
+	err := cmd.Run()
+
+	return err
+}
+
+func ExecuteScript(script string) (string, error) {
+	content := []byte(script)
+
+	tempfile, err := ioutil.TempFile("", "prefix")
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+
+	defer os.Remove(tempfile.Name())
+
+	tempfile.Write(content)
+
+	cmd, err := exec.Command("/bin/bash", tempfile.Name()).Output()
+
+	if err != nil {
+		log.Fatal(err)
+		return "", err
+	}
+
+	return string(cmd), nil
 }
