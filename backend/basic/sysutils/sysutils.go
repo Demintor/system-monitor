@@ -36,15 +36,16 @@ func GetProcessTable() ([]model.Process, error) {
 
 		process := model.Process{
 			UID:   words[0],
-			PPID:  words[1],
-			C:     words[2],
-			SZ:    words[3],
-			RSS:   words[4],
-			PSR:   words[5],
-			STIME: words[6],
-			TTY:   words[7],
-			TIME:  words[8],
-			CMD:   words[9],
+			PID:   words[1],
+			PPID:  words[2],
+			C:     words[3],
+			SZ:    words[4],
+			RSS:   words[5],
+			PSR:   words[6],
+			STIME: words[7],
+			TTY:   words[8],
+			TIME:  words[9],
+			CMD:   words[10],
 		}
 
 		processes = append(processes, process)

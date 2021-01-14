@@ -2,6 +2,7 @@ package model
 
 type Process struct {
 	UID   string
+	PID   string
 	PPID  string
 	C     string
 	SZ    string
