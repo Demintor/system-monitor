@@ -34,6 +34,7 @@ func main() {
 	r.Use(cors.New(config))
 
 	r.GET("/v2/testapi/get-process-table", api.GetProcessTable)
+	r.GET("/v2/testapi/get-system-info", api.GetSystemInfo)
 	r.POST("/v2/testapi/kill-process/:pid", api.KillProcess)
 	r.POST("/v2/testapi/execute-script", api.ExecuteScript)
 

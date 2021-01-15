@@ -80,3 +80,19 @@ func ExecuteScript(c *gin.Context) {
 
 	c.JSON(http.StatusOK, result)
 }
+
+// @Description get system info
+// @Produce  json
+// @Success 200 {array} model.SysInfo
+// @Failure 500 {object} web.APIError Internal Server Error
+// @Router /testapi/get-system-info [get]
+func GetSystemInfo(c *gin.Context) {
+	sysInfo, err := sysutils.GetSysInfo()
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, web.APIError{ErrorCode: 1, ErrorMessage: err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, sysInfo)
+}

@@ -100,6 +100,31 @@ var doc = `{
                 }
             }
         },
+        "/testapi/get-system-info": {
+            "get": {
+                "description": "get system info",
+                "produces": [
+                    "application/json"
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.SysInfo"
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/web.APIError"
+                        }
+                    }
+                }
+            }
+        },
         "/testapi/kill-process/{pid}": {
             "post": {
                 "description": "kill process by PID",
@@ -159,6 +184,9 @@ var doc = `{
                 "cmd": {
                     "type": "string"
                 },
+                "pid": {
+                    "type": "string"
+                },
                 "ppid": {
                     "type": "string"
                 },
@@ -189,6 +217,41 @@ var doc = `{
             "type": "object",
             "properties": {
                 "script": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.SysInfo": {
+            "type": "object",
+            "properties": {
+                "countUser": {
+                    "type": "string"
+                },
+                "cpuModelName": {
+                    "type": "string"
+                },
+                "cpus": {
+                    "type": "integer"
+                },
+                "currentTime": {
+                    "type": "string"
+                },
+                "loadLastFifteenMin": {
+                    "type": "number"
+                },
+                "loadLastFiveMin": {
+                    "type": "number"
+                },
+                "loadLastOneMin": {
+                    "type": "number"
+                },
+                "memAvailable": {
+                    "type": "string"
+                },
+                "memTotal": {
+                    "type": "string"
+                },
+                "runningTime": {
                     "type": "string"
                 }
             }
