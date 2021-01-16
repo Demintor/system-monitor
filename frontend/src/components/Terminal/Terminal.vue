@@ -52,7 +52,7 @@ export default {
     .terminal {
         font-size: 12px;
         min-height: 500px;
-        width: 700px;
+        width: 850px;
         margin: 0;
         padding: 10px;
         resize: none;
