@@ -64,8 +64,8 @@ export default {
             const systemInfoMemory = {
                 title: 'Память',
                 descNames: {
-                    MemTotal: 'Всего кб',
-                    MemAvailable: 'Свободно кб',
+                    MemTotal: 'Всего kB',
+                    MemAvailable: 'Свободно kB',
                 },
                 descValues: {
                     MemTotal,
