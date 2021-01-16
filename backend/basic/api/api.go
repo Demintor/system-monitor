@@ -83,7 +83,7 @@ func ExecuteScript(c *gin.Context) {
 
 // @Description get system info
 // @Produce  json
-// @Success 200 {array} model.SysInfo
+// @Success 200 {object} model.SysInfo
 // @Failure 500 {object} web.APIError Internal Server Error
 // @Router /testapi/get-system-info [get]
 func GetSystemInfo(c *gin.Context) {

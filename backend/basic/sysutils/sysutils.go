@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"errors"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
 	"regexp"
@@ -25,7 +24,6 @@ func GetProcessTable() ([]model.Process, error) {
 
 	if err != nil {
 		println(err)
-		log.Fatal(err)
 		return nil, err
 	}
 
@@ -69,7 +67,6 @@ func ExecuteScript(script string) (string, error) {
 
 	tempfile, err := ioutil.TempFile("", "prefix")
 	if err != nil {
-		log.Fatal(err)
 		return "", err
 	}
 
@@ -80,7 +77,6 @@ func ExecuteScript(script string) (string, error) {
 	cmd, err := exec.Command("/bin/bash", tempfile.Name()).Output()
 
 	if err != nil {
-		log.Fatal(err)
 		return "", err
 	}
 
@@ -96,7 +92,6 @@ func GetSysInfo() (model.SysInfo, error) {
 	err := cmd.Run()
 
 	if err != nil {
-		log.Fatal(err)
 		return model.SysInfo{}, err
 	}
 
@@ -131,7 +126,6 @@ func GetSysInfo() (model.SysInfo, error) {
 	err = cmd.Run()
 
 	if err != nil {
-		log.Fatal(err)
 		return model.SysInfo{}, err
 	}
 
@@ -144,7 +138,14 @@ func GetSysInfo() (model.SysInfo, error) {
 	if len(submatches) >= 2 {
 		cpuModelName = submatches[1]
 	} else {
-		return model.SysInfo{}, errors.New("cpu model name not found")
+		re = regexp.MustCompile(`Имя модели:\s+([^\n]+)\n`)
+		submatches = re.FindStringSubmatch(cpuinfo)
+
+		if len(submatches) >= 2 {
+			cpuModelName = submatches[1]
+		} else {
+			return model.SysInfo{}, errors.New("cpu model name not found")
+		}
 	}
 
 	re = regexp.MustCompile(`CPU\(s\):\s+(\d+)`)
@@ -166,7 +167,6 @@ func GetSysInfo() (model.SysInfo, error) {
 	err = cmd.Run()
 
 	if err != nil {
-		log.Fatal(err)
 		return model.SysInfo{}, err
 	}
 
